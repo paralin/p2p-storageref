@@ -11,21 +11,14 @@ import (
 // ErrMissingIpfsShell indicates we are missing the IPFS file shell in the context.
 var ErrMissingIpfsShell = errors.New("ipfs file shell must be given")
 
-var ipfsShellKey = &(struct{}{})
-
-// WithIpfsShell attaches an IPFS file shell to a context.
-func WithIpfsShell(parent context.Context, sh *ipfs.FileShell) context.Context {
-	return context.WithValue(parent, ipfsShellKey, sh)
-}
-
-// GetIpfsShell gets the IPFS file shell from a context.
-func GetIpfsShell(ctx context.Context) *ipfs.FileShell {
-	v := ctx.Value(ipfsShellKey)
-	if v == nil {
-		return nil
+// NewStorageRefIPFS builds a IPFS storage reference.
+func NewStorageRefIPFS(ref string) *StorageRef {
+	return &StorageRef{
+		StorageType: StorageType_StorageType_IPFS,
+		Ipfs: &StorageRefIPFS{
+			ObjectHash: ref,
+		},
 	}
-
-	return v.(*ipfs.FileShell)
 }
 
 // FollowRef follows the reference, getting context from ctx.
@@ -35,7 +28,7 @@ func (r *StorageRefIPFS) FollowRef(ctx context.Context) (pbobject.Object, error)
 		return nil, ErrMissingObjectTable
 	}
 
-	sh := GetIpfsShell(ctx)
+	sh := ipfs.GetIpfsShell(ctx)
 	if sh == nil {
 		return nil, ErrMissingIpfsShell
 	}

@@ -66,9 +66,13 @@ func (r *StorageRef) Equals(other StorageRefImpl) bool {
 		return false
 	}
 
-	otherImpl, err := other.GetImpl()
-	if err != nil {
-		return false
+	otherImpl := other
+	if sr, ok := other.(*StorageRef); ok {
+		oi, err := sr.GetImpl()
+		if err != nil {
+			return false
+		}
+		otherImpl = oi
 	}
 
 	return impl.Equals(otherImpl)

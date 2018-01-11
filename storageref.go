@@ -12,6 +12,8 @@ var ErrMissingObjectTable = errors.New("object table must be given")
 
 // StorageRefImpl follows a storage reference.
 type StorageRefImpl interface {
+	// GetStorageType returns the storage type.
+	GetStorageType() StorageType
 	// FollowRef follows the reference, getting context from ctx.
 	FollowRef(ctx context.Context) (pbobject.Object, error)
 	// Equals compares the references.

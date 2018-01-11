@@ -36,6 +36,11 @@ func (r *StorageRefIPFS) FollowRef(ctx context.Context) (pbobject.Object, error)
 	return sh.GetProtobufObject(ctx, r.GetObjectHash())
 }
 
+// GetStorageType returns the storage type.
+func (r *StorageRefIPFS) GetStorageType() StorageType {
+	return StorageType_StorageType_IPFS
+}
+
 // Equals compares the two references.
 func (r *StorageRefIPFS) Equals(other StorageRefImpl) bool {
 	ot, ok := other.(*StorageRefIPFS)

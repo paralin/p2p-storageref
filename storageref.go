@@ -14,6 +14,27 @@ var ErrMissingObjectTable = errors.New("object table must be given")
 type StorageRefImpl interface {
 	// FollowRef follows the reference, getting context from ctx.
 	FollowRef(ctx context.Context) (pbobject.Object, error)
+	// Equals compares the references.
+	Equals(other StorageRefImpl) bool
+	// String returns a string of the reference.
+	String() string
+	// IsEmpty checks if the storage ref is empty.
+	IsEmpty() bool
+}
+
+// GetImpl returns the implementation of this storage ref.
+// If the storage ref is nil, returns nil, nil
+func (r *StorageRef) GetImpl() (StorageRefImpl, error) {
+	if r == nil {
+		return nil, nil
+	}
+
+	switch r.GetStorageType() {
+	case StorageType_StorageType_IPFS:
+		return r.GetIpfs(), nil
+	default:
+		return nil, errors.Errorf("unrecognized storage type: %v", r.GetStorageType().String())
+	}
 }
 
 // FollowRef follows the reference, getting context from ctx.
@@ -23,10 +44,51 @@ func (r *StorageRef) FollowRef(ctx context.Context) (pbobject.Object, error) {
 		return nil, nil
 	}
 
-	switch r.GetStorageType() {
-	case StorageType_StorageType_IPFS:
-		return r.GetIpfs().FollowRef(ctx)
-	default:
-		return nil, errors.Errorf("unimplemented storage reference: %s", r.StorageType.String())
+	impl, err := r.GetImpl()
+	if err != nil {
+		return nil, err
 	}
+
+	return impl.FollowRef(ctx)
 }
+
+// Equals compares two StorageRef.
+// If the storage type is unknown, or the reference is nil, false will be returned.
+func (r *StorageRef) Equals(other StorageRefImpl) bool {
+	if r.GetStorageType() != other.GetStorageType() {
+		return false
+	}
+
+	impl, err := r.GetImpl()
+	if err != nil {
+		return false
+	}
+
+	otherImpl, err := other.GetImpl()
+	if err != nil {
+		return false
+	}
+
+	return impl.Equals(otherImpl)
+}
+
+// IsEmpty checks if the reference is empty.
+func (r *StorageRef) IsEmpty() bool {
+	if r == nil {
+		return true
+	}
+
+	if r.GetStorageType() == StorageType_StorageType_UNKNOWN {
+		return true
+	}
+
+	impl, err := r.GetImpl()
+	if err != nil {
+		return false
+	}
+
+	return impl.IsEmpty()
+}
+
+// type assertion
+var _ = (StorageRefImpl)(&StorageRef{})

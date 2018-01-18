@@ -5,6 +5,9 @@ package storageref;
 message StorageRef {
   // StorageType contains the type of storage this references.
   StorageType storage_type = 1;
+  // ObjectDigest contains the digest of the decrypted object.
+  // Optional.
+  bytes object_digest = 3;
   // Ipfs contains a IPFS storage reference.
   StorageRefIPFS ipfs = 2;
 }
@@ -15,6 +18,9 @@ enum StorageType {
   StorageType_UNKNOWN = 0;
   // StorageType_IPFS is the IPFS storage type.
   StorageType_IPFS = 1;
+  // StorageRef_DIGEST references a digest in local storage only by object multihash.
+  // TODO
+  // StorageRef_DIGEST = 2;
 }
 
 // StorageRefIPFS references an object in IPFS.

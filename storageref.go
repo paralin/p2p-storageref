@@ -1,21 +1,22 @@
 package storageref
 
 import (
+	"bytes"
 	"context"
 
 	"github.com/aperturerobotics/pbobject"
 	"github.com/pkg/errors"
 )
 
-// ErrMissingObjectTable indicates there is no object table attached to ctx.
-var ErrMissingObjectTable = errors.New("object table must be given")
+// ErrMissingObjectHash indicates there is no object digest attached to the reference.
+var ErrMissingObjectHash = errors.New("object hash/digest must be given")
 
 // StorageRefImpl follows a storage reference.
 type StorageRefImpl interface {
 	// GetStorageType returns the storage type.
 	GetStorageType() StorageType
-	// FollowRef follows the reference, getting context from ctx.
-	FollowRef(ctx context.Context) (pbobject.Object, error)
+	// FollowRef follows the reference, getting context from ctx and placing the result into out.
+	FollowRef(ctx context.Context, objectDigest []byte, out pbobject.Object) error
 	// Equals compares the references.
 	Equals(other StorageRefImpl) bool
 	// String returns a string of the reference.
@@ -31,27 +32,34 @@ func (r *StorageRef) GetImpl() (StorageRefImpl, error) {
 		return nil, nil
 	}
 
-	switch r.GetStorageType() {
-	case StorageType_StorageType_IPFS:
-		return r.GetIpfs(), nil
-	default:
-		return nil, errors.Errorf("unrecognized storage type: %v", r.GetStorageType().String())
-	}
-}
-
-// FollowRef follows the reference, getting context from ctx.
-// If the reference is nil, returns nil, nil.
-func (r *StorageRef) FollowRef(ctx context.Context) (pbobject.Object, error) {
-	if r == nil {
-		return nil, nil
-	}
-
-	impl, err := r.GetImpl()
+	ctor, err := GetStorageRefImplCtor(r.GetStorageType())
 	if err != nil {
 		return nil, err
 	}
 
-	return impl.FollowRef(ctx)
+	return ctor(r), nil
+}
+
+// FollowRef follows the reference, getting context from ctx.
+// If the reference is nil, returns nil, nil.
+// The inner multihash can be specified to override the one specified in the storage ref.
+// Otherwise, specify nil.
+func (r *StorageRef) FollowRef(ctx context.Context, objectDigest []byte, out pbobject.Object) error {
+	if r == nil || out == nil {
+		return errors.New("nil storage reference")
+	}
+
+	omh := r.GetObjectDigest()
+	if objectDigest != nil {
+		omh = objectDigest
+	}
+
+	impl, err := r.GetImpl()
+	if err != nil {
+		return err
+	}
+
+	return impl.FollowRef(ctx, omh, out)
 }
 
 // Equals compares two StorageRef.
@@ -73,6 +81,12 @@ func (r *StorageRef) Equals(other StorageRefImpl) bool {
 			return false
 		}
 		otherImpl = oi
+
+		if sr.GetObjectDigest() != nil || r.GetObjectDigest() != nil {
+			if bytes.Compare(sr.GetObjectDigest(), r.GetObjectDigest()) != 0 {
+				return false
+			}
+		}
 	}
 
 	return impl.Equals(otherImpl)

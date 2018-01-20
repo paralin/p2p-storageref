@@ -25,7 +25,7 @@ func NewDigestImpl(ref *storageref.StorageRef) storageref.StorageRefImpl {
 }
 
 // NewStorageRefDigest builds a digest storage reference.
-func NewStorageRefDigest(ref string, objectDigest []byte) *storageref.StorageRef {
+func NewStorageRefDigest(objectDigest []byte) *storageref.StorageRef {
 	return &storageref.StorageRef{
 		StorageType:  storageref.StorageType_StorageRef_DIGEST,
 		ObjectDigest: objectDigest,

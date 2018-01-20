@@ -10,6 +10,8 @@ message StorageRef {
   bytes object_digest = 3;
   // Ipfs contains a IPFS storage reference.
   StorageRefIPFS ipfs = 2;
+  // Digest contains a digest-only reference (empty at the moment).
+  StorageRefDigest digest = 4;
 }
 
 // StorageType contains the possible types of storage.
@@ -19,12 +21,15 @@ enum StorageType {
   // StorageType_IPFS is the IPFS storage type.
   StorageType_IPFS = 1;
   // StorageRef_DIGEST references a digest in local storage only by object multihash.
-  // TODO
-  // StorageRef_DIGEST = 2;
+  StorageRef_DIGEST = 2;
 }
 
 // StorageRefIPFS references an object in IPFS.
 message StorageRefIPFS {
   // ObjectHash contains the referenced object hash in string form.
   string object_hash = 1;
+}
+
+// StorageRefDigest references an object by digest only.
+message StorageRefDigest {
 }

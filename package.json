@@ -1,0 +1,68 @@
+{
+    "name": "@aperturerobotics/storageref",
+    "private": true,
+    "version": "0.0.0",
+    "description": "storage reference",
+    "main": "dist/es/index.js",
+    "types": "dist/types/index.d.ts",
+    "scripts": {
+        "build": "rimraf dist && tsc && ./hack/copy_pb.bash",
+        "test": "jest",
+        "test:watch": "jest --watch",
+        "test:prod": "npm run lint && npm run test -- --coverage --no-cache",
+        "precommit": "lint-staged"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/aperturerobotics/storageref.git"
+    },
+    "author": "Christian Stewart <christian@aperturerobotics.com>",
+    "license": "UNLICENSED",
+    "bugs": {
+        "url": "https://github.com/aperturerobotics/storageref/issues"
+    },
+    "homepage": "https://github.com/aperturerobotics/storageref#readme",
+    "dependencies": {
+        "protobufjs": "^6.8.0"
+    },
+    "lint-staged": {
+        "**/*.ts": [
+            "prettier --write --no-semi --single-quote",
+            "git add"
+        ]
+    },
+    "jest": {
+        "transform": {
+            ".(ts|tsx)": "<rootDir>/../../node_modules/ts-jest/preprocessor.js"
+        },
+        "testRegex": "(test|spec)\\.(ts|tsx|js)$",
+        "moduleFileExtensions": [
+            "ts",
+            "tsx",
+            "js"
+        ],
+        "coveragePathIgnorePatterns": [
+            "/node_modules/",
+            "storageref.js"
+        ],
+        "coverageThreshold": {
+            "global": {
+                "branches": 90,
+                "functions": 95,
+                "lines": 95,
+                "statements": 95
+            }
+        },
+        "collectCoverage": true,
+        "mapCoverage": true
+    },
+    "devDependencies": {
+        "@types/es6-promise": "^3.3.0",
+        "@types/jest": "^22.1.0",
+        "@types/node": "^9.4.5",
+        "lint-staged": "^6.0.0",
+        "prettier": "^1.4.4",
+        "rimraf": "^2.6.2",
+        "ts-jest": "^22.0.1"
+    }
+}

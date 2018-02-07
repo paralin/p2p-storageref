@@ -20,8 +20,8 @@ enum StorageType {
   StorageType_UNKNOWN = 0;
   // StorageType_IPFS is the IPFS storage type.
   StorageType_IPFS = 1;
-  // StorageRef_DIGEST references a digest in local storage only by object multihash.
-  StorageRef_DIGEST = 2;
+  // StorageType_DIGEST references a digest in local storage only by object multihash.
+  StorageType_DIGEST = 2;
 }
 
 // StorageRefIPFS references an object in IPFS.

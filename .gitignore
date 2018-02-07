@@ -1,1 +1,5 @@
 .#*
+prototree/
+node_modules
+coverage/
+dist/

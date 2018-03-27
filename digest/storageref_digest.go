@@ -27,7 +27,7 @@ func NewDigestImpl(ref *storageref.StorageRef) storageref.StorageRefImpl {
 // NewStorageRefDigest builds a digest storage reference.
 func NewStorageRefDigest(objectDigest []byte) *storageref.StorageRef {
 	return &storageref.StorageRef{
-		StorageType:  storageref.StorageType_StorageRef_DIGEST,
+		StorageType:  storageref.StorageType_StorageType_DIGEST,
 		ObjectDigest: objectDigest,
 		Digest:       &storageref.StorageRefDigest{},
 	}
@@ -53,7 +53,7 @@ func (r *DigestImpl) FollowRef(ctx context.Context, objDigest []byte, out pbobje
 
 // GetStorageType returns the storage type.
 func (r *DigestImpl) GetStorageType() storageref.StorageType {
-	return storageref.StorageType_StorageRef_DIGEST
+	return storageref.StorageType_StorageType_DIGEST
 }
 
 // Equals compares the two references.
@@ -76,5 +76,8 @@ func (r *DigestImpl) IsEmpty() bool {
 }
 
 func init() {
-	storageref.MustRegisterStorageRefImplCtor(storageref.StorageType_StorageRef_DIGEST, NewDigestImpl)
+	storageref.MustRegisterStorageRefImplCtor(
+		storageref.StorageType_StorageType_DIGEST,
+		NewDigestImpl,
+	)
 }

@@ -26,12 +26,17 @@ func NewIPFSImpl(ref *storageref.StorageRef) storageref.StorageRefImpl {
 }
 
 // NewStorageRefIPFS builds a IPFS storage reference.
-func NewStorageRefIPFS(ref string, objectDigest []byte) *storageref.StorageRef {
+func NewStorageRefIPFS(
+	ref string,
+	objectDigest []byte,
+	refType storageref.IPFSRefType,
+) *storageref.StorageRef {
 	return &storageref.StorageRef{
 		StorageType:  storageref.StorageType_StorageType_IPFS,
 		ObjectDigest: objectDigest,
 		Ipfs: &storageref.StorageRefIPFS{
-			ObjectHash: ref,
+			Reference:   ref,
+			IpfsRefType: refType,
 		},
 	}
 }
@@ -52,7 +57,8 @@ func (r *IPFSImpl) FollowRef(ctx context.Context, objDigest []byte, out pbobject
 		return storageref.ErrMissingObjectHash
 	}
 
-	return objStore.GetOrFetch(ctx, objDigest, r.GetObjectHash(), out, *encConf)
+	isBlock := r.GetIpfsRefType() == storageref.IPFSRefType_IPFSRefType_BLOCK
+	return objStore.GetOrFetch(ctx, objDigest, r.GetReference(), isBlock, out, *encConf)
 }
 
 // GetStorageType returns the storage type.
@@ -71,12 +77,16 @@ func (r *IPFSImpl) Equals(other storageref.StorageRefImpl) bool {
 		return false
 	}
 
-	return ot.GetObjectHash() == r.GetObjectHash()
+	if r.GetIpfsRefType() != ot.GetIpfsRefType() {
+		return false
+	}
+
+	return ot.GetReference() == r.GetReference()
 }
 
 // IsEmpty checks if the reference is empty.
 func (r *IPFSImpl) IsEmpty() bool {
-	return r.GetObjectHash() == ""
+	return r.GetReference() == ""
 }
 
 func init() {

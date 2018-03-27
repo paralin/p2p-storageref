@@ -26,8 +26,18 @@ enum StorageType {
 
 // StorageRefIPFS references an object in IPFS.
 message StorageRefIPFS {
-  // ObjectHash contains the referenced object hash in string form.
-  string object_hash = 1;
+  // Reference contains the referenced multihash in string form.
+  string reference = 1;
+  // IpfsRefType indicates the type of IPFS reference type this is.
+  IPFSRefType ipfs_ref_type = 2;
+}
+
+// IPFSRefType is an ipfs reference type.
+enum IPFSRefType {
+  // IPFSRefType_BLOCK is the default reference type, an IPFS block.
+  IPFSRefType_BLOCK = 0;
+  // IPFSRefType_OBJECT indicates the hash refers to a IPFS merkle object.
+  IPFSRefType_OBJECT = 1;
 }
 
 // StorageRefDigest references an object by digest only.

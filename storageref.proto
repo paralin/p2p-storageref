@@ -12,6 +12,8 @@ message StorageRef {
   StorageRefIPFS ipfs = 2;
   // Digest contains a digest-only reference (empty at the moment).
   StorageRefDigest digest = 4;
+  // InBand contains an in-band reference.
+  StorageRefInBand in_band = 5;
 }
 
 // StorageType contains the possible types of storage.
@@ -22,6 +24,8 @@ enum StorageType {
   StorageType_IPFS = 1;
   // StorageType_DIGEST references a digest in local storage only by object multihash.
   StorageType_DIGEST = 2;
+  // StorageType_INBAND stores object data in the storage reference itself, in-band.
+  StorageType_INBAND = 3;
 }
 
 // StorageRefIPFS references an object in IPFS.
@@ -42,4 +46,10 @@ enum IPFSRefType {
 
 // StorageRefDigest references an object by digest only.
 message StorageRefDigest {
+}
+
+// StorageRefInBand references an object stored in-band.
+message StorageRefInBand {
+  // Data is the encoded object.
+  bytes data = 1;
 }

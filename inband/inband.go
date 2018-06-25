@@ -34,14 +34,16 @@ func NewStorageRefInBand(objectDigest []byte, data []byte) *storageref.StorageRe
 }
 
 // FollowRef follows the reference, getting context from ctx.
-func (r *InBandImpl) FollowRef(ctx context.Context, objDigest []byte, out pbobject.Object) error {
+func (r *InBandImpl) FollowRef(ctx context.Context, objDigest []byte, out pbobject.Object, objWrapper *pbobject.ObjectWrapper) error {
 	encConf := pbobject.GetEncryptionConf(ctx)
 	if encConf == nil {
 		return ErrMissingEncryptionConfig
 	}
 
 	// Attempt to decode and decrypt the wrapper.
-	objWrapper := &pbobject.ObjectWrapper{}
+	if objWrapper == nil {
+		objWrapper = &pbobject.ObjectWrapper{}
+	}
 	if err := proto.Unmarshal(r.GetData(), objWrapper); err != nil {
 		return err
 	}

@@ -16,7 +16,12 @@ type StorageRefImpl interface {
 	// GetStorageType returns the storage type.
 	GetStorageType() StorageType
 	// FollowRef follows the reference, getting context from ctx and placing the result into out.
-	FollowRef(ctx context.Context, objectDigest []byte, out pbobject.Object) error
+	FollowRef(
+		ctx context.Context,
+		objectDigest []byte,
+		out pbobject.Object,
+		outWrapper *pbobject.ObjectWrapper,
+	) error
 	// Equals compares the references.
 	Equals(other StorageRefImpl) bool
 	// String returns a string of the reference.
@@ -44,7 +49,12 @@ func (r *StorageRef) GetImpl() (StorageRefImpl, error) {
 // If the reference is nil, returns nil, nil.
 // The inner multihash can be specified to override the one specified in the storage ref.
 // Otherwise, specify nil.
-func (r *StorageRef) FollowRef(ctx context.Context, objectDigest []byte, out pbobject.Object) error {
+func (r *StorageRef) FollowRef(
+	ctx context.Context,
+	objectDigest []byte,
+	out pbobject.Object,
+	outWrapper *pbobject.ObjectWrapper,
+) error {
 	if r == nil || out == nil {
 		return errors.New("nil storage reference")
 	}
@@ -59,7 +69,7 @@ func (r *StorageRef) FollowRef(ctx context.Context, objectDigest []byte, out pbo
 		return err
 	}
 
-	return impl.FollowRef(ctx, omh, out)
+	return impl.FollowRef(ctx, omh, out, outWrapper)
 }
 
 // Equals compares two StorageRef.

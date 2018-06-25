@@ -42,7 +42,12 @@ func NewStorageRefIPFS(
 }
 
 // FollowRef follows the reference, getting context from ctx.
-func (r *IPFSImpl) FollowRef(ctx context.Context, objDigest []byte, out pbobject.Object) error {
+func (r *IPFSImpl) FollowRef(
+	ctx context.Context,
+	objDigest []byte,
+	out pbobject.Object,
+	outWrapper *pbobject.ObjectWrapper,
+) error {
 	objStore := objstore.GetObjStore(ctx)
 	if objStore == nil {
 		return ErrMissingObjectStore
@@ -58,7 +63,15 @@ func (r *IPFSImpl) FollowRef(ctx context.Context, objDigest []byte, out pbobject
 	}
 
 	isBlock := r.GetIpfsRefType() == storageref.IPFSRefType_IPFSRefType_BLOCK
-	return objStore.GetOrFetch(ctx, objDigest, r.GetReference(), isBlock, out, *encConf)
+	return objStore.GetOrFetch(
+		ctx,
+		objDigest,
+		r.GetReference(),
+		isBlock,
+		out,
+		outWrapper,
+		*encConf,
+	)
 }
 
 // GetStorageType returns the storage type.

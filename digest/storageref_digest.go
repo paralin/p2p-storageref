@@ -34,7 +34,12 @@ func NewStorageRefDigest(objectDigest []byte) *storageref.StorageRef {
 }
 
 // FollowRef follows the reference, getting context from ctx.
-func (r *DigestImpl) FollowRef(ctx context.Context, objDigest []byte, out pbobject.Object, objWrapper *pbobject.ObjectWrapper) error {
+func (r *DigestImpl) FollowRef(
+	ctx context.Context,
+	objDigest []byte,
+	out pbobject.Object,
+	objWrapper *pbobject.ObjectWrapper,
+) error {
 	objStore := objstore.GetObjStore(ctx)
 	if objStore == nil {
 		return ErrMissingObjectStore
